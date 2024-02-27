@@ -10,7 +10,7 @@ builder.Services.AddControllers();
 //Inyección por dependencia del string de conexion al contexto
 builder.Services.AddDbContext<labContext>(options =>
         options.UseSqlServer(
-                builder.Configuration.GetConnectionString("labDBConecction")
+                builder.Configuration.GetConnectionString("LabDbConnection")
                 )
         );
 
