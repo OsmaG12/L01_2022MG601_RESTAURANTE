@@ -21,6 +21,19 @@ namespace Laboratorio.Controllers
                 _labContexto = labContexto;
             }
 
+            [HttpGet]
+            [Route("GetAll")]
+            public IActionResult Get()
+            {
+                List<Pedidos> listPedido = (from p in _labContexto.Pedidos
+                                            select p).ToList();
+                if (listPedido.Count == 0)
+                {
+                    return NotFound();
+                }
+                return Ok(listPedido);
+            }
+
             //Filtro por cliente
             [HttpGet]
             [Route("GetByIdCliente/{id}")]
