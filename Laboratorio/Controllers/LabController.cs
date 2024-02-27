@@ -136,7 +136,6 @@ namespace Laboratorio.Controllers
 
 
 
-
             //filtro cuando el precio de platos sea menor de un valor dado
             [HttpGet]
             [Route("GetByValor/{valor}")]
@@ -146,8 +145,8 @@ namespace Laboratorio.Controllers
                 try
                 {
                     Platos? plato = (from pl in _labContexto.Platos
-                                       where pl.precio < valor
-                                       select pl).FirstOrDefault();
+                                     where pl.precio < valor
+                                     select pl).FirstOrDefault();
                     if (plato == null)
                     {
                         return NotFound();
@@ -185,8 +184,8 @@ namespace Laboratorio.Controllers
             public IActionResult ActualizarPlatos(int id, [FromBody] Platos platoModificar)
             {
                 Platos? platoActual = (from pl in _labContexto.Platos
-                                         where pl.platoId == id
-                                         select pl).FirstOrDefault();
+                                       where pl.platoId == id
+                                       select pl).FirstOrDefault();
                 if (platoActual == null)
                 {
                     return NotFound();
@@ -195,7 +194,7 @@ namespace Laboratorio.Controllers
                 platoActual.platoId = platoModificar.platoId;
                 platoActual.nombrePlato = platoModificar.nombrePlato;
                 platoActual.precio = platoModificar.precio;
-                
+
 
                 _labContexto.Entry(platoActual).State = EntityState.Modified;
                 _labContexto.SaveChanges();
@@ -210,8 +209,8 @@ namespace Laboratorio.Controllers
             public IActionResult EliminarPlatos(int id)
             {
                 Platos? plato = (from pl in _labContexto.Platos
-                                   where pl.platoId == id
-                                   select pl).FirstOrDefault();
+                                 where pl.platoId == id
+                                 select pl).FirstOrDefault();
                 if (plato == null)
                 {
                     return NotFound();
@@ -222,6 +221,93 @@ namespace Laboratorio.Controllers
                 _labContexto.SaveChanges();
 
                 return Ok(plato);
+            }
+            //Fin de eliminar platos
+
+
+            //filtro por el nombre del motorista
+            [HttpGet]
+            [Route("Find/{nombre}")]
+
+            public IActionResult FindByName(string nombre)
+            {
+                try
+                {
+                    Motoristas? moto = (from m in _labContexto.Motoristas
+                                        where m.nombreMotorista.Contains(nombre)
+                                        select m).FirstOrDefault();
+                    if (moto == null)
+                    {
+                        return NotFound();
+                    }
+                    return Ok(moto);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, "Error al procesar la solicitud");
+                }
+            }
+            //Fin del filtro por el nombre del motorista
+
+            //Crear para Motorista
+            [HttpPost]
+            [Route("Add")]
+            public IActionResult GuardarMotorista([FromBody] Motoristas moto)
+            {
+                try
+                {
+                    _labContexto.Motoristas.Add(moto);
+                    _labContexto.SaveChanges();
+                    return Ok(moto);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+            }
+            //Fin de crear para Motorista
+
+            //Modificar Motoristas
+            [HttpPut]
+            [Route("actualizarMotoristas/{id}")]
+            public IActionResult ActualizarMotoristas(int id, [FromBody] Motoristas motoModificar)
+            {
+                Motoristas? motoActual = (from m in _labContexto.Motoristas
+                                          where m.motoristaId == id
+                                          select m).FirstOrDefault();
+                if (motoActual == null)
+                {
+                    return NotFound();
+                }
+
+                motoActual.motoristaId = motoModificar.motoristaId;
+                motoActual.nombreMotorista = motoModificar.nombreMotorista;
+
+                _labContexto.Entry(motoActual).State = EntityState.Modified;
+                _labContexto.SaveChanges();
+
+                return Ok(motoModificar);
+            }
+            //Fin de modificar platos
+
+            //Eliminar Motoristas
+            [HttpDelete]
+            [Route("eliminarMotoristas/{id}")]
+            public IActionResult EliminarMotoristas(int id)
+            {
+                Motoristas? moto = (from m in _labContexto.Motoristas
+                                    where m.motoristaId == id
+                                    select m).FirstOrDefault();
+                if (moto == null)
+                {
+                    return NotFound();
+                }
+
+                _labContexto.Motoristas.Attach(moto);
+                _labContexto.Motoristas.Remove(moto);
+                _labContexto.SaveChanges();
+
+                return Ok(moto);
             }
             //Fin de eliminar platos
         }
