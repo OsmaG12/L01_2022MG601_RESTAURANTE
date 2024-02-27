@@ -25,7 +25,7 @@ namespace Laboratorio.Controllers
             [HttpGet]
             [Route("GetByIdCliente/{id}")]
 
-            public IActionResult Get(int id)
+            public IActionResult GetCliente(int id)
             {
                 try
                 {
@@ -49,7 +49,7 @@ namespace Laboratorio.Controllers
             [HttpGet]
             [Route("GetByIdMoto/{id}")]
 
-            public IActionResult Get(int? id)
+            public IActionResult GetMoto(int id)
             {
                 try
                 {
@@ -133,6 +133,97 @@ namespace Laboratorio.Controllers
                 return Ok(pedido);
             }
             //Fin de eliminar pedido
+
+
+
+
+            //filtro cuando el precio de platos sea menor de un valor dado
+            [HttpGet]
+            [Route("GetByValor/{valor}")]
+
+            public IActionResult GetValor(int valor)
+            {
+                try
+                {
+                    Platos? plato = (from pl in _labContexto.Platos
+                                       where pl.precio < valor
+                                       select pl).FirstOrDefault();
+                    if (plato == null)
+                    {
+                        return NotFound();
+                    }
+                    return Ok(plato);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, "Error al procesar la solicitud");
+                }
+            }
+            //Fin del filtro cuando el precio de platos sea menor de un valor dado
+
+            //Crear para Platos
+            [HttpPost]
+            [Route("Add")]
+            public IActionResult GuardarPlato([FromBody] Platos plato)
+            {
+                try
+                {
+                    _labContexto.Platos.Add(plato);
+                    _labContexto.SaveChanges();
+                    return Ok(plato);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex);
+                }
+            }
+            //Fin de crear para platos
+
+            //Modificar platos
+            [HttpPut]
+            [Route("actualizarPlatos/{id}")]
+            public IActionResult ActualizarPlatos(int id, [FromBody] Platos platoModificar)
+            {
+                Platos? platoActual = (from pl in _labContexto.Platos
+                                         where pl.platoId == id
+                                         select pl).FirstOrDefault();
+                if (platoActual == null)
+                {
+                    return NotFound();
+                }
+
+                platoActual.platoId = platoModificar.platoId;
+                platoActual.nombrePlato = platoModificar.nombrePlato;
+                platoActual.precio = platoModificar.precio;
+                
+
+                _labContexto.Entry(platoActual).State = EntityState.Modified;
+                _labContexto.SaveChanges();
+
+                return Ok(platoModificar);
+            }
+            //Fin de modificar platos
+
+            //Eliminar platos
+            [HttpDelete]
+            [Route("eliminarPlatos/{id}")]
+            public IActionResult EliminarPlatos(int id)
+            {
+                Platos? plato = (from pl in _labContexto.Platos
+                                   where pl.platoId == id
+                                   select pl).FirstOrDefault();
+                if (plato == null)
+                {
+                    return NotFound();
+                }
+
+                _labContexto.Platos.Attach(plato);
+                _labContexto.Platos.Remove(plato);
+                _labContexto.SaveChanges();
+
+                return Ok(plato);
+            }
+            //Fin de eliminar platos
         }
     }
 }
